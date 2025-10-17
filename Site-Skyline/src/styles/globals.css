@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0b0b0b;
+  --fg: #ffffff;
+  --gold: #C8A951;
+}
+
+html, body, #__next {
+  height: 100%;
+}
+
+body {
+  @apply bg-black text-white antialiased;
+  background: radial-gradient(1200px 800px at 70% 10%, rgba(200,169,81,0.08), transparent 60%) #000;
+}
+
+.container {
+  @apply max-w-6xl mx-auto px-4;
+}
+.section {
+  @apply py-20 md:py-28;
+}
+.btn {
+  @apply inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-medium border border-white/10 bg-white/5 hover:bg-white/10 transition;
+}
+.btn-primary {
+  @apply border-skyline-gold text-skyline-gold hover:bg-skyline-gold/10;
+}
+.card {
+  @apply rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm;
+}
