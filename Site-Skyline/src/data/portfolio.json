@@ -1,0 +1,26 @@
+[
+  {
+    "id": "aurum",
+    "title": "Aurum — Manifesto de Marca",
+    "category": "Institucional",
+    "thumb": "/hero.jpg",
+    "video": "https://player.vimeo.com/video/76979871",
+    "summary": "Narrativa cinematográfica para lançamento de marca premium."
+  },
+  {
+    "id": "urban-motion",
+    "title": "Urban Motion — Campanha Social",
+    "category": "Comercial",
+    "thumb": "/hero.jpg",
+    "video": "https://player.vimeo.com/video/90509568",
+    "summary": "Campanha 360º com foco em redes sociais."
+  },
+  {
+    "id": "wedding-short",
+    "title": "Wedding Short — Highlights",
+    "category": "Wedding",
+    "thumb": "/hero.jpg",
+    "video": "https://player.vimeo.com/video/137857207",
+    "summary": "Highlights com recorte emocional e ritmo musical."
+  }
+]
