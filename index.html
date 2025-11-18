@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skyline Studio</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    /* ====== ESTILOS BÁSICOS (ajuste conforme seu design) ====== */
+    :root { --nav-h: 72px; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif; background:#0b0b0d; color:#e9e9ee; }
+    img { max-width: 100%; display:block; }
+    a { color:#e9e9ee; text-decoration:none; }
+    h1,h2,h3 { margin:0 0 .5rem; }
+
+    /* Navbar fixa */
+    .navbar { position: sticky; top:0; z-index:1000; background:#0b0b0d; border-bottom:1px solid rgba(255,255,255,.06); }
+    .navbar .container { max-width:1200px; margin:0 auto; padding:0 20px; display:flex; align-items:center; justify-content:space-between; height:var(--nav-h); }
+    .logo-navbar { height:40px; width:auto; }
+    #main-nav { display:flex; gap:32px; }
+    #main-nav a { opacity:.9; transition:.2s ease; }
+    #main-nav a:hover { opacity:1; transform:translateY(-1px); }
+    #main-nav a.active { color:#ffca28; text-shadow:0 0 10px rgba(255,202,40,.35); }
+
+    /* Seções compensam a altura da navbar ao rolar para o anchor */
+    section { scroll-margin-top: calc(var(--nav-h) + 16px); }
+
+    /* HERO */
+    .skyline-hero { min-height:60vh; display:grid; place-items:center; background: radial-gradient(1200px 500px at 50% -10%, rgba(255,202,40,.08), transparent), linear-gradient(180deg, #0b0b0d 0%, #0f0f14 100%); text-align:center; padding:64px 20px; }
+    .skyline-hero .hero-content { max-width:900px; margin:auto; }
+    .skyline-hero h1 { font-size: clamp(28px, 6vw, 54px); line-height:1.05; }
+    .subtitle { opacity:.85; font-size: clamp(16px, 2.5vw, 22px); margin-top:12px; }
+    .cta-btn, .btn, .btn-work, .cta-btn-gradient, .btn-form { display:inline-block; padding:14px 22px; border-radius:10px; background:#ffca28; color:#121214; font-weight:700; margin-top:20px; }
+
+    /* Stats */
+    .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; max-width:1000px; margin:40px auto; padding:0 20px; }
+    .stat { background:#121214; border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:18px; text-align:center; }
+    .stat h3 { color:#ffca28; font-size:28px; }
+
+    /* Cards de serviços (layout simples) */
+    .features-section { padding:64px 20px; max-width:1200px; margin:0 auto; }
+    .section-title { text-align:center; font-size:clamp(22px, 4vw, 36px); margin-bottom:10px; }
+    .section-subtitle { text-align:center; opacity:.8; margin:0 auto 28px; max-width:800px; }
+    .service-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+    .card { background:#121214; border:1px solid rgba(255,255,255,.06); border-radius:16px; padding:18px; transition:.2s; }
+    .card.active, .card:hover { border-color: rgba(255,202,40,.4); transform: translateY(-2px); }
+    .icon { font-size:28px; margin-bottom:8px; }
+    .highlight { margin-top:8px; font-weight:700; }
+
+    /* Carrossel fade (estrutura mínima) */
+    .fade-carousel { margin:32px auto 8px; max-width:1200px; }
+    .slide { display:none; grid-template-columns:1.1fr .9fr; gap:18px; align-items:center; }
+    .slide.active { display:grid; }
+    .slide-text .btn { margin-top:12px; }
+    .slide-image { position:relative; }
+    .badge { position:absolute; bottom:12px; right:12px; background:#121214; border:1px solid rgba(255,255,255,.12); padding:8px 12px; border-radius:12px; }
+    .indicators { display:flex; justify-content:center; gap:8px; margin:10px 0 0; }
+    .dot { width:10px; height:10px; border-radius:999px; background:#2b2b34; cursor:pointer; }
+    .dot.active { background:#ffca28; }
+
+    /* Portfólio */
+    .portfolio-section { padding:64px 20px; max-width:1200px; margin:0 auto; }
+    .portfolio-filters { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:8px 0 18px; }
+    .filter-btn { background:#121214; border:1px solid rgba(255,255,255,.1); padding:10px 14px; border-radius:10px; cursor:pointer; color:#e9e9ee; }
+    .filter-btn.active { background:#ffca28; color:#121214; border-color:#ffca28; }
+    .portfolio-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .portfolio-item { position:relative; overflow:hidden; border-radius:14px; background:#121214; border:1px solid rgba(255,255,255,.06); }
+    .portfolio-info { position:absolute; inset:auto 0 0 0; background: linear-gradient(180deg, transparent, rgba(0,0,0,.75)); padding:16px; }
+
+    /* Equipe */
+    .team-section { padding:64px 20px; max-width:1200px; margin:0 auto; }
+    .team-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin:20px 0; }
+    .team-card { background:#121214; border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:16px; text-align:center; }
+    .team-metrics-box { margin-top:12px; }
+    .team-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .metric-item { background:#121214; border:1px solid rgba(255,255,255,.06); border-radius:12px; padding:14px; text-align:center; }
+
+    /* Como trabalhamos */
+    .how-we-work { padding:64px 20px; max-width:1200px; margin:0 auto; text-align:center; }
+    .work-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:20px 0 24px; }
+    .step-card { background:#121214; border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:14px; }
+    .step-card.active { border-color:rgba(255,202,40,.4); }
+
+    /* Clientes */
+    .clients-section { padding:64px 20px; max-width:1200px; margin:0 auto; text-align:center; }
+    .client-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:18px; }
+    .client-card { background:#121214; border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:16px; }
+
+    /* Contato */
+    .contact-section { padding:64px 20px; max-width:1200px; margin:0 auto; }
+    .alert-offer { background:#121214; border:1px dashed rgba(255,202,40,.6); border-radius:12px; padding:12px 14px; margin:10px 0 18px; color:#ffca28; text-align:center; }
+    .contact-grid { display:grid; grid-template-columns:1.2fr .8fr; gap:18px; }
+    .contact-form, .contact-info, .why-skyline-pro { background:#121214; border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:18px; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .form-group { display:flex; flex-direction:column; gap:6px; }
+    label { font-size:14px; opacity:.9; }
+    input, select, textarea { background:#0f0f14; border:1px solid rgba(255,255,255,.1); color:#e9e9ee; padding:10px 12px; border-radius:10px; }
+    textarea { min-height:110px; resize:vertical; }
+    .btn-form { width:100%; margin-top:10px; }
+    .full-width { grid-column:1 / -1; }
+    #formStatus { margin-top:8px; font-weight:600; }
+    .why-item-pro { display:flex; gap:12px; align-items:flex-start; margin-top:12px; }
+    .icon-pro { font-size:22px; color:#ffca28; }
+
+    /* CTA Portfólio */
+    .portfolio-cta { text-align:center; padding:40px 20px; margin:24px auto 0; max-width:900px; background:#121214; border:1px solid rgba(255,255,255,.06); border-radius:16px; }
+    .portfolio-cta h3 span { color:#ff4081; }
+    .cta-btn-gradient { background: linear-gradient(90deg, #ffca28, #ff7a00); color:#121214; }
+
+    /* Footer */
+    footer { text-align:center; padding:24px 20px; opacity:.7; border-top:1px solid rgba(255,255,255,.06); margin-top:24px; }
+
+    /* Responsivo */
+    @media (max-width: 1024px){
+      .service-cards, .portfolio-grid { grid-template-columns:1fr 1fr; }
+      .work-steps { grid-template-columns:repeat(2,1fr); }
+      .client-stats { grid-template-columns:repeat(2,1fr); }
+      .contact-grid { grid-template-columns:1fr; }
+    }
+    @media (max-width: 640px){
+      :root { --nav-h: 64px; }
+      #main-nav { gap:16px; font-size:14px; }
+      .service-cards, .portfolio-grid, .team-grid { grid-template-columns:1fr; }
+      .team-metrics { grid-template-columns:1fr; }
+      .work-steps { grid-template-columns:1fr; }
+      .stats { grid-template-columns:1fr; }
+      .slide.active { grid-template-columns:1fr; }
+      .form-row { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="container">
+      <img src="assets/logo-skyline.png" alt="Logo Skyline Studio" class="logo-navbar">
+      <nav id="main-nav">
+        <a href="#inicio">Início</a>
+        <a href="#servicos">Serviços</a>
+        <a href="#portfolio">Portfólio</a>
+        <a href="#equipe">Equipe</a>
+        <a href="#clientes">Clientes</a>
+        <a href="#contato">Contato</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="skyline-hero" id="inicio">
+    <div class="hero-content">
+      <h1 class="blur-bg">Marketing que Gera Resultados</h1>
+      <p class="subtitle" id="rotating-text">Transformando sua marca em sucesso</p>
+      <div class="hero-buttons">
+        <a href="#servicos" class="cta-btn">Conheça nossos serviços</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- MÉTRICAS -->
+  <section class="stats">
+    <div class="stat"><h3>+250</h3><p>Projetos entregues</p></div>
+    <div class="stat"><h3>+98%</h3><p>Clientes satisfeitos</p></div>
+    <div class="stat"><h3>+10x</h3><p>Retorno médio</p></div>
+  </section>
+
+  <!-- SERVIÇOS -->
+  <section class="features-section" id="servicos">
+    <h2 class="section-title">NOSSOS SERVIÇOS</h2>
+    <p class="section-subtitle">Soluções completas de marketing digital que transformam sua presença online em resultados reais.</p>
+
+    <div class="service-cards">
+      <div class="card">
+        <div class="icon"><i class="bi bi-badge-ad"></i></div>
+        <h3>Tráfego Pago</h3>
+        <p class="subtitle">Google Ads & Facebook Ads</p>
+        <p class="description">Campanhas otimizadas que geram leads qualificados e vendas reais. ROI comprovado em todos os projetos.</p>
+        <ul>
+          <li>Google Ads</li><li>Facebook Ads</li><li>Instagram Ads</li><li>YouTube Ads</li><li>LinkedIn Ads</li>
+        </ul>
+        <div class="highlight">300% ROI Médio</div>
+      </div>
+
+      <div class="card">
+        <div class="icon"><i class="bi bi-palette-fill"></i></div>
+        <h3>Design Visual</h3>
+        <p class="subtitle">Identidade & Branding</p>
+        <p class="description">Criamos identidades visuais marcantes que conectam sua marca ao coração do seu público-alvo.</p>
+        <ul>
+          <li>Logo Design</li><li>Identidade Visual</li><li>Material Gráfico</li><li>UI/UX Design</li><li>Branding</li>
+        </ul>
+        <div class="highlight">500+ Designs Criados</div>
+      </div>
+
+      <div class="card">
+        <div class="icon"><i class="bi bi-camera-video-fill"></i></div>
+        <h3>Vídeo Marketing</h3>
+        <p class="subtitle">Conteúdo que Converte</p>
+        <p class="description">Vídeos profissionais que contam a história da sua marca e convertem visualizações em vendas.</p>
+        <ul>
+          <li>Vídeos Promocionais</li><li>Motion Graphics</li><li>Animações</li><li>Edição Profissional</li><li>Roteiros</li>
+        </ul>
+        <div class="highlight">1M+ Views Geradas</div>
+      </div>
+    </div>
+
+    <!-- CARROSSEL -->
+    <div class="fade-carousel">
+      <div class="slide active">
+        <div class="slide-text">
+          <h3>Tráfego Pago</h3>
+          <p>Campanhas otimizadas que geram conversões reais e crescimento previsível.</p>
+          <a href="#servicos" class="btn">Saiba mais</a>
+        </div>
+        <div class="slide-image">
+          <img src="assets/trafego-pago.jpg" alt="Tráfego Pago" />
+          <div class="badge">300% ROI Médio</div>
+        </div>
+      </div>
+
+      <div class="slide">
+        <div class="slide-text">
+          <h3>Design Visual</h3>
+          <p>Criação de identidades visuais e materiais que inspiram confiança e desejo.</p>
+          <a href="#servicos" class="btn">Saiba mais</a>
+        </div>
+        <div class="slide-image">
+          <img src="assets/design-visual.jpg" alt="Design Visual" />
+          <div class="badge">Design lucrativo</div>
+        </div>
+      </div>
+
+      <div class="slide">
+        <div class="slide-text">
+          <h3>Vídeo Marketing</h3>
+          <p>Produções que conectam, emocionam e geram resultados para o seu negócio.</p>
+          <a href="#servicos" class="btn">Saiba mais</a>
+        </div>
+        <div class="slide-image">
+          <img src="assets/video-marketing.jpg" alt="Vídeo Marketing" />
+          <div class="badge">Engajamento garantido</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="indicators">
+      <span class="dot active"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+  </section>
+
+  <!-- PORTFÓLIO -->
+  <section class="portfolio-section" id="portfolio">
+    <h2 class="section-title"><span style="color:#ff4081;">NOSSO</span> PORTFÓLIO</h2>
+    <p class="section-subtitle">Projetos que transformaram negócios e geraram resultados extraordinários para nossos clientes</p>
+
+    <div class="portfolio-filters">
+      <button class="filter-btn active" data-filter="all">Todos os Projetos</button>
+      <button class="filter-btn" data-filter="trafego">Tráfego Pago</button>
+      <button class="filter-btn" data-filter="design">Design Visual</button>
+      <button class="filter-btn" data-filter="video">Vídeo Marketing</button>
+    </div>
+
+    <div class="portfolio-grid">
+      <div class="portfolio-item trafego">
+        <img src="assets/e-commerce.jpg" alt="E-commerce Fashion" />
+        <div class="portfolio-info">
+          <h3>E-commerce Fashion</h3><p>Campanha que gerou 400% de ROI em 3 meses</p>
+          <div class="tags"><span>Google Ads</span> <span>Facebook Ads</span> <span>E-commerce</span></div>
+        </div>
+      </div>
+
+      <div class="portfolio-item design">
+        <img src="assets/identidades-visuais.jpg" alt="Identidade Visual Tech" />
+        <div class="portfolio-info">
+          <h3>Identidade Visual Tech</h3><p>Rebranding completo para startup de tecnologia</p>
+          <div class="tags"><span>Branding</span> <span>Logo Design</span> <span>Identidade</span></div>
+        </div>
+      </div>
+
+      <div class="portfolio-item video">
+        <img src="assets/Campanha-Viral.jpg" alt="Campanha Viral" />
+        <div class="portfolio-info">
+          <h3>Campanha Viral</h3><p>Vídeo promocional com 2Mi+ visualizações</p>
+          <div class="tags"><span>Motion Graphics</span> <span>Vídeo Marketing</span> <span>Social Media</span></div>
+        </div>
+      </div>
+
+      <div class="portfolio-item trafego">
+        <img src="assets/App-Fitness.jpg" alt="App Fitness" />
+        <div class="portfolio-info">
+          <h3>App Fitness</h3><p>Aquisição de usuários com CPA 70% menor</p>
+          <div class="tags"><span>App Marketing</span> <span>User Acquisition</span> <span>Mobile</span></div>
+        </div>
+      </div>
+
+      <div class="portfolio-item design">
+        <img src="assets/design-visual.jpg" alt="Design Visual" />
+        <div class="portfolio-info">
+          <h3>Design Visual</h3><p>Identidade visual e UI Design com apelo moderno e minimalista</p>
+          <div class="tags"><span>UI/UX</span> <span>Branding</span> <span>Design System</span></div>
+        </div>
+      </div>
+
+      <div class="portfolio-item video">
+        <img src="assets/video-marketing.jpg" alt="Vídeo Marketing" />
+        <div class="portfolio-info">
+          <h3>Vídeo Marketing</h3><p>Produções audiovisuais profissionais que geram impacto e engajamento</p>
+          <div class="tags"><span>Produção</span> <span>Roteiro</span> <span>Storytelling</span></div>
+        </div>
+      </div>
+
+      <div class="portfolio-item design">
+        <img src="assets/Restaurante-Premium.jpg" alt="Restaurante Premium" />
+        <div class="portfolio-info">
+          <h3>Restaurante Premium</h3><p>Identidade visual que aumentou o faturamento em 180%</p>
+          <div class="tags"><span>Branding</span> <span>Cardápio</span> <span>Design Visual</span></div>
+        </div>
+      </div>
+
+      <div class="portfolio-item video">
+        <img src="assets/Série-Educacional.jpg" alt="Série Educacional" />
+        <div class="portfolio-info">
+          <h3>Série Educacional</h3><p>Conteúdo em vídeo com mais de 500K+ inscritos</p>
+          <div class="tags"><span>Educação</span> <span>YouTube</span> <span>Estúdio</span></div>
+        </div>
+      </div>
+
+      <div class="portfolio-item trafego">
+        <img src="assets/trafego-pago.jpg" alt="Tráfego Pago" />
+        <div class="portfolio-info">
+          <h3>Tráfego Pago</h3><p>Gestão de anúncios e otimização de campanhas</p>
+          <div class="tags"><span>Google Ads</span> <span>Meta Ads</span> <span>Analytics</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA FINAL -->
+    <section class="portfolio-cta" aria-labelledby="cta-title">
+      <h3 id="cta-title">Pronto para ser nosso próximo <span>caso de sucesso</span>?</h3>
+      <p>Vamos criar algo incrível juntos e gerar resultados que vão surpreender você.</p>
+      <a href="https://wa.me/5512981127522?text=Olá%20Paulo!%20Vi%20seu%20portfólio%20e%20quero%20iniciar%20um%20projeto%20com%20a%20Skyline%20Studio.%20🚀"
+         target="_blank" rel="noopener noreferrer" class="cta-btn-gradient" aria-label="Abrir WhatsApp">
+        <span class="icon">🚀</span> <strong>Iniciar Meu Projeto</strong>
+      </a>
+    </section>
+  </section>
+
+  <!-- EQUIPE -->
+  <section class="team-section" id="equipe">
+    <h2 class="section-title">Nossa <span style="color:#ffca28;">Equipe</span></h2>
+    <p class="section-subtitle">Os melhores profissionais do mercado trabalhando para transformar seu negócio em uma máquina de vendas.</p>
+
+    <div class="team-grid">
+      <div class="team-card">
+        <img src="assets/Josh.jpg" alt="Josh">
+        <h3>Carlos Silva</h3>
+        <p>CEO & Estrategista Digital</p>
+        <span>Especialista em Growth Hacking</span>
+      </div>
+
+      <div class="team-card">
+        <img src="assets/ana.jpg" alt="Ana Costa">
+        <h3>Ana Costa</h3>
+        <p>Diretora Criativa</p>
+        <span>Design & Branding</span>
+      </div>
+    </div>
+
+    <div class="team-metrics-box">
+      <div class="team-metrics">
+        <div class="metric-item"><h3>25+</h3><p>Anos de Experiência Combinada</p></div>
+        <div class="metric-item"><h3>100+</h3><p>Certificações Profissionais</p></div>
+        <div class="metric-item"><h3>24/7</h3><p>Suporte Dedicado</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO TRABALHAMOS -->
+  <section class="how-we-work" id="como-trabalhamos">
+    <h2>Como <span>Trabalhamos</span></h2>
+
+    <div class="work-steps">
+      <div class="step-card">
+        <div class="step-number">01</div>
+        <div class="step-icon"><i class="bi bi-search"></i></div>
+        <h3>Análise</h3>
+        <p>Analisamos seu negócio e concorrência</p>
+      </div>
+
+      <div class="step-card ">
+        <div class="step-number">02</div>
+        <div class="step-icon"><i class="bi bi-lightbulb"></i></div>
+        <h3>Estratégia</h3>
+        <p>Criamos um plano personalizado</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">03</div>
+        <div class="step-icon"><i class="bi bi-gear-fill"></i></div>
+        <h3>Execução</h3>
+        <p>Implementamos com precisão</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">04</div>
+        <div class="step-icon"><i class="bi bi-graph-up-arrow"></i></div>
+        <h3>Otimização</h3>
+        <p>Melhoramos continuamente</p>
+      </div>
+    </div>
+
+    <div class="cta-work">
+      <h3>Pronto para trabalhar com os <span>MELHORES</span>?</h3>
+      <p>Nossa equipe está pronta para transformar seu negócio. Agende uma conversa gratuita agora!</p>
+      <a href="https://wa.me/5512981127522?text=Olá!%20Quero%20trabalhar%20com%20a%20Skyline%20Studio!%20🔥" target="_blank" rel="noopener noreferrer" class="btn-work">
+        FALAR COM A EQUIPE AGORA!
+      </a>
+    </div>
+  </section>
+
+  <!-- CLIENTES -->
+  <section class="clients-section" id="clientes">
+    <h2>Nossos <span>Clientes</span></h2>
+    <p>Mais de 500 empresas já transformaram seus negócios conosco. Veja os resultados reais!</p>
+
+    <div class="client-stats">
+      <div class="client-card"><i class="bi bi-person"></i><h3>500+</h3><p>Clientes Atendidos</p></div>
+      <div class="client-card"><i class="bi bi-cash-coin"></i><h3>R$ 50M+</h3><p>Faturamento Gerado</p></div>
+      <div class="client-card"><i class="bi bi-heart"></i><h3>98%</h3><p>Taxa de Satisfação</p></div>
+      <div class="client-card"><i class="bi bi-graph-up-arrow"></i><h3>300%</h3><p>ROI Médio</p></div>
+    </div>
+  </section>
+
+  <!-- CONTATO -->
+  <section class="contact-section" id="contato">
+    <h2>Vamos <span>Conversar</span></h2>
+    <p>Pronto para transformar seu negócio? <br>Agende uma conversa gratuita e descubra como podemos multiplicar seus resultados!</p>
+    <div class="alert-offer"><span>🔥 OFERTA LIMITADA:</span> Consultoria GRATUITA por tempo limitado!</div>
+
+    <div class="contact-grid">
+      <!-- FORMULÁRIO -->
+      <form class="contact-form" id="contactForm">
+        <h3><strong>Solicite sua</strong> <span>Consultoria GRATUITA</span></h3>
+        <p>Preencha o formulário e retornaremos em até 2h!</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nome">Nome Completo *</label>
+            <input type="text" id="nome" name="nome" placeholder="Seu nome completo" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="whatsapp">WhatsApp *</label>
+            <input type="tel" id="whatsapp" name="whatsapp" placeholder="(11) 99999-9999" required>
+          </div>
+          <div class="form-group">
+            <label for="empresa">Empresa</label>
+            <input type="text" id="empresa" name="empresa" placeholder="Nome da sua empresa">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="servico">Serviço de Interesse *</label>
+            <select id="servico" name="servico" required>
+              <option value="">Selecione um serviço</option>
+              <option value="trafego">Gestão de Tráfego Pago</option>
+              <option value="social">Gestão de Redes Sociais</option>
+              <option value="identidade">Criação de Identidade Visual</option>
+              <option value="videos">Produção de Vídeos e Reels</option>
+              <option value="site">Criação de Sites e Landing Pages</option>
+              <option value="consultoria">Consultoria Estratégica</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="orcamento">Orçamento Mensal *</label>
+            <select id="orcamento" name="orcamento" required>
+              <option value="">Selecione uma faixa</option>
+              <option value="ate1k">Até R$1.000</option>
+              <option value="1k-3k">De R$1.000 a R$3.000</option>
+              <option value="3k-5k">De R$3.000 a R$5.000</option>
+              <option value="5k-10k">De R$5.000 a R$10.000</option>
+              <option value="10k+">Acima de R$10.000</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="mensagem">Conte-nos sobre seu projeto</label>
+          <textarea id="mensagem" name="mensagem" placeholder="Descreva seus objetivos, desafios e o que espera alcançar..." maxlength="500"></textarea>
+          <small id="charCount">0/500 caracteres</small>
+        </div>
+
+        <button type="submit" class="btn-form">🚀 QUERO MINHA CONSULTORIA GRATUITA!</button>
+        <div id="formStatus" aria-live="polite"></div>
+      </form>
+
+      <!-- CONTATOS E DIFERENCIAIS -->
+      <div class="contact-info">
+        <div class="contact-box">
+          <h4>Outras formas de contato</h4>
+          <div class="info-item green"><i class="bi bi-whatsapp"></i> WhatsApp: (11) 99999-9999</div>
+          <div class="info-item blue"><i class="bi bi-envelope"></i> contato@skylinedigital.com</div>
+          <div class="info-item purple"><i class="bi bi-geo-alt"></i> São Paulo, SP - Brasil</div>
+        </div>
+
+        <div class="why-skyline-pro">
+          <h3>Por que escolher a <span>Skyline?</span></h3>
+
+          <div class="why-item-pro">
+            <div class="icon-pro"><i class="bi bi-lightning-charge-fill"></i></div>
+            <div class="text-pro">
+              <h4>Resposta em até 2h</h4>
+              <p>Atendimento ágil e retorno garantido.</p>
+            </div>
+          </div>
+
+          <div class="why-item-pro">
+            <div class="icon-pro"><i class="bi bi-graph-up-arrow"></i></div>
+            <div class="text-pro">
+              <h4>Garantia de Resultado</h4>
+              <p>Foco em performance real e ROI comprovado.</p>
+            </div>
+          </div>
+
+          <div class="why-item-pro">
+            <div class="icon-pro"><i class="bi bi-award-fill"></i></div>
+            <div class="text-pro">
+              <h4>Equipe Especializada</h4>
+              <p>Profissionais certificados e experientes.</p>
+            </div>
+          </div>
+
+          <div class="why-item-pro">
+            <div class="icon-pro"><i class="bi bi-headset"></i></div>
+            <div class="text-pro">
+              <h4>Suporte 24/7</h4>
+              <p>Disponibilidade total para o seu projeto.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    © <span id="year"></span> Skyline Studio — Todos os direitos reservados.
+  </footer>
+
+  <!-- JS -->
+  <script>
+    // ========= Menu âncoras com offset, rolagem suave e link ativo =========
+    const nav = document.getElementById('main-nav');
+    const links = nav.querySelectorAll('a');
+    const sections = [...links].map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+    const navHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 72;
+
+    links.forEach(link => {
+      link.addEventListener('click', (e) => {
+        const hash = link.getAttribute('href');
+        if (!hash || !hash.startsWith('#')) return;
+        const target = document.querySelector(hash);
+        if (!target) return;
+        e.preventDefault();
+        const y = target.getBoundingClientRect().top + window.pageYOffset - (navHeight + 16);
+        window.scrollTo({ top: y, behavior: 'smooth' });
+        history.pushState(null, '', hash);
+      });
+    });
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const id = '#' + entry.target.id;
+        const link = nav.querySelector(`a[href="${id}"]`);
+        if (!link) return;
+        if (entry.isIntersecting) {
+          links.forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+        }
+      });
+    }, { rootMargin: `-${navHeight + 32}px 0px -60% 0px`, threshold: 0.1 });
+
+    sections.forEach(sec => io.observe(sec));
+
+    window.addEventListener('load', () => {
+      if (location.hash) {
+        const target = document.querySelector(location.hash);
+        if (target) {
+          const y = target.getBoundingClientRect().top + window.pageYOffset - (navHeight + 16);
+          window.scrollTo({ top: y });
+        }
+      }
+    });
+
+    // ========= utilidades existentes =========
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Texto rotativo
+    const rotatingText = document.getElementById("rotating-text");
+    const phrases = [
+      "Transformando sua marca em sucesso",
+      "Geramos resultados que impressionam",
+      "Criamos conteúdo que converte",
+      "Dominamos o tráfego pago",
+      "Designs que vendem"
+    ];
+    let phraseIndex = 0;
+    setInterval(() => {
+      rotatingText.textContent = phrases[phraseIndex];
+      phraseIndex = (phraseIndex + 1) % phrases.length;
+    }, 3000);
+
+    // Carrossel
+    const slides = document.querySelectorAll(".slide");
+    const dots = document.querySelectorAll(".dot");
+    const cards = document.querySelectorAll(".card");
+    let currentIndex = 0, autoSlide;
+
+    function showSlide(index) {
+      slides.forEach((s, i) => s.classList.toggle("active", i === index));
+      dots.forEach((d, i) => d.classList.toggle("active", i === index));
+      cards.forEach((c, i) => c.classList.toggle("active", i === index));
+      currentIndex = index;
+      resetAutoSlide();
+    }
+    function autoChange(){ currentIndex=(currentIndex+1)%slides.length; showSlide(currentIndex); }
+    function resetAutoSlide(){ clearInterval(autoSlide); autoSlide=setInterval(autoChange,7000); }
+    dots.forEach((dot,i)=>dot.addEventListener("click",()=>showSlide(i)));
+    cards.forEach((card,i)=>card.addEventListener("click",()=>showSlide(i)));
+    resetAutoSlide();
+
+    // Filtros portfólio
+    const filterButtons = document.querySelectorAll(".filter-btn");
+    const portfolioItems = document.querySelectorAll(".portfolio-item");
+    filterButtons.forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        document.querySelector(".filter-btn.active").classList.remove("active");
+        btn.classList.add("active");
+        const filter = btn.getAttribute("data-filter");
+        portfolioItems.forEach(item=>{
+          item.style.display = (filter==="all" || item.classList.contains(filter)) ? "block" : "none";
+        });
+      });
+    });
+
+    // Formulário (fake submit)
+    const form = document.getElementById("contactForm");
+    const charCount = document.getElementById("charCount");
+    const msg = document.getElementById("mensagem");
+    msg.addEventListener("input", () => charCount.textContent = `${msg.value.length}/500 caracteres`);
+    form.addEventListener("submit",(e)=>{
+      e.preventDefault();
+      const status = document.getElementById("formStatus");
+      status.textContent="Enviando...";
+      status.style.color="#ffca28";
+      setTimeout(()=>{
+        status.textContent="Mensagem enviada com sucesso! 🚀";
+        status.style.color="#4caf50";
+        form.reset();
+        charCount.textContent = "0/500 caracteres";
+      },1000);
+    });
+  </script>
+</body>
+</html>
